@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Sara's Astrology Zone - Unlock Your Cosmic Path</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(to bottom right, #fbc2eb 0%, #a6c1ee 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        .font-cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .zodiac-sign {
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+            border: 2px solid transparent;
+        }
+        .zodiac-sign:hover {
+            transform: scale(1.05);
+            background-color: rgba(255,255,255,0.5);
+        }
+        .zodiac-sign.selected {
+            border-color: #ec4899;
+            background-color: rgba(236, 72, 153, 0.2);
+        }
+        .btn-primary {
+            background-color: #ec4899;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .btn-primary:hover {
+            background-color: #db2777;
+            transform: translateY(-2px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .lucide {
+            width: 1.25em;
+            height: 1.25em;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        main {
+            flex-grow: 1;
+        }
+        #daily-insight-display {
+            min-height: 80px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            display: none;
+        }
+        #daily-insight-display.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: flex;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <header class="py-6 px-4 md:px-8 shadow-md bg-white/30 backdrop-blur-md sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 id="siteTitle" class="text-3xl font-display text-pink-600">Sara's Astrology Zone</h1>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#home" id="navHome" class="text-purple-600 hover:text-pink-500 transition-colors">Home</a>
+                <a href="#about" id="navAbout" class="text-purple-600 hover:text-pink-500 transition-colors">About Sara</a>
+                <a href="#services" id="navServices" class="text-purple-600 hover:text-pink-500 transition-colors">Services</a>
+                <a href="#your-sign" id="navYourSign" class="text-purple-600 hover:text-pink-500 transition-colors">Your Sign</a>
+                <a href="#contact" id="navContact" class="text-purple-600 hover:text-pink-500 transition-colors">Contact</a>
+                <div class="flex space-x-2 ml-4">
+                    <button id="lang-en" class="text-sm font-semibold px-3 py-1 rounded-full bg-purple-200 text-purple-700 hover:bg-purple-300 transition-colors">EN</button>
+                    <button id="lang-de" class="text-sm font-semibold px-3 py-1 rounded-full bg-purple-200 text-purple-700 hover:bg-purple-300 transition-colors">DE</button>
+                    <button id="lang-tr" class="text-sm font-semibold px-3 py-1 rounded-full bg-purple-200 text-purple-700 hover:bg-purple-300 transition-colors">TR</button>
+                </div>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-purple-600">
+                <svg class="lucide" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-4">
+            <a href="#home" class="block py-2 px-4 text-purple-600 hover:bg-pink-100 rounded" data-i18n-key="navHome">Home</a>
+            <a href="#about" class="block py-2 px-4 text-purple-600 hover:bg-pink-100 rounded" data-i18n-key="navAbout">About Sara</a>
+            <a href="#services" class="block py-2 px-4 text-purple-600 hover:bg-pink-100 rounded" data-i18n-key="navServices">Services</a>
+            <a href="#your-sign" class="block py-2 px-4 text-purple-600 hover:bg-pink-100 rounded" data-i18n-key="navYourSign">Your Sign</a>
+            <a href="#contact" class="block py-2 px-4 text-purple-600 hover:bg-pink-100 rounded" data-i18n-key="navContact">Contact</a>
+            <div class="flex justify-center space-x-2 mt-4">
+                <button id="lang-en-mobile" class="text-sm font-semibold px-3 py-1 rounded-full bg-purple-200 text-purple-700 hover:bg-purple-300 transition-colors">EN</button>
+                <button id="lang-de-mobile" class="text-sm font-semibold px-3 py-1 rounded-full bg-purple-200 text-purple-700 hover:bg-purple-300 transition-colors">DE</button>
+                <button id="lang-tr-mobile" class="text-sm font-semibold px-3 py-1 rounded-full bg-purple-200 text-purple-700 hover:bg-purple-300 transition-colors">TR</button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <section id="home" class="py-16 md:py-24 px-4 text-center bg-cover bg-center flex flex-col items-center justify-center min-h-[70vh] relative overflow-hidden" style="background-image: linear-gradient(rgba(255,255,255,0.3), rgba(255,255,255,0.3)), url('https://placehold.co/1200x700/E9A8D9/E9A8D9');">
+            <div class="container mx-auto relative z-10">
+                <h2 id="homeTitle" class="text-4xl md:text-6xl font-display text-purple-700 mb-4 drop-shadow-md leading-tight">Your Cosmic Path Awaits</h2>
+                <p id="homeSubtitle" class="text-xl md:text-2xl font-display text-pink-600 mb-10 drop-shadow-sm">Unlock the wisdom of the stars with Sara</p>
+                <button id="getDailyInsight" class="btn-primary inline-flex items-center justify-center space-x-2">
+                    <svg class="lucide w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    <span id="getInsightButton">Get Daily Insight</span>
+                </button>
+                <div id="daily-insight-display" class="card p-6 min-h-[80px] max-w-xl mx-auto mt-8 text-lg text-purple-700 flex items-center justify-center text-center">
+                </div>
+            </div>
+        </section>
+        <section id="about" class="py-16 px-4">
+            <div class="container mx-auto max-w-3xl text-center">
+                <h3 id="aboutTitle" class="text-3xl font-display text-purple-700 mb-6">Meet Sara</h3>
+                <p id="aboutParagraph1" class="text-lg text-slate-700 leading-relaxed mb-4">
+                    Hello, I'm Sara! With a lifelong passion for the celestial arts, I've dedicated myself to helping others navigate their life's path through the wisdom of astrology. My approach is intuitive, compassionate, and tailored to your unique cosmic blueprint.
+                </p>
+                <p id="aboutParagraph2" class="text-lg text-slate-700 leading-relaxed">
+                    Whether you're seeking clarity on your purpose, relationships, or future endeavors, I'm here to illuminate the guidance and insights the stars hold for you. Let's explore your journey together!
+                </p>
+            </div>
+        </section>
+        <section id="services" class="py-16 px-4 bg-pink-50/50">
+            <div class="container mx-auto">
+                <h3 id="servicesTitle" class="text-3xl font-display text-purple-700 text-center mb-12">My Services</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="card p-8 text-center">
+                        <div class="text-pink-500 mb-4">
+                            <svg class="lucide mx-auto w-16 h-16" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8z"/><path d="M12 6v6l4 2"/></svg>
+                        </div>
+                        <h4 id="serviceNatalTitle" class="text-2xl font-semibold text-purple-600 mb-3">Natal Chart Reading</h4>
+                        <p id="serviceNatalDesc" class="text-slate-600">Discover your unique strengths, challenges, and life purpose encoded in your birth chart.</p>
+                    </div>
+                    <div class="card p-8 text-center">
+                         <div class="text-pink-500 mb-4">
+                            <svg class="lucide mx-auto w-16 h-16" viewBox="0 0 24 24"><path d="M17 18a2 2 0 00-2-2H9a2 2 0 00-2 2"/><path d="M12 14a2 2 0 002-2V9a2 2 0 00-2-2H9.5a2 2 0 000 4H12Z"/><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2Z"/></svg>
+                        </div>
+                        <h4 id="serviceRelTitle" class="text-2xl font-semibold text-purple-600 mb-3">Relationship Compatibility</h4>
+                        <p id="serviceRelDesc" class="text-slate-600">Understand the dynamics between you and your partner with a synastry chart analysis.</p>
+                    </div>
+                    <div class="card p-8 text-center">
+                         <div class="text-pink-500 mb-4">
+                            <svg class="lucide mx-auto w-16 h-16" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 12H3"/><rect width="18" height="18" x="3" y="4" rx="2"/></svg>
+                        </div>
+                        <h4 id="serviceYearlyTitle" class="text-2xl font-semibold text-purple-600 mb-3">Yearly Forecast</h4>
+                        <p id="serviceYearlyDesc" class="text-slate-600">Gain insights into the upcoming year's energies, opportunities, and potential challenges.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="your-sign" class="py-16 px-4">
+            <div class="container mx-auto text-center">
+                <h3 id="yourSignTitle" class="text-3xl font-display text-purple-700 mb-2">What's Your Sign?</h3>
+                <p id="yourSignSubtitle" class="text-lg text-slate-600 mb-10">Click your zodiac sign to reveal a little cosmic insight!</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6 mb-10">
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Aries">
+                        <span class="text-4xl mb-1">♈</span><span id="ariesSign" class="font-semibold text-purple-600">Aries</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Taurus">
+                        <span class="text-4xl mb-1">♉</span><span id="taurusSign" class="font-semibold text-purple-600">Taurus</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Gemini">
+                        <span class="text-4xl mb-1">♊</span><span id="geminiSign" class="font-semibold text-purple-600">Gemini</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Cancer">
+                        <span class="text-4xl mb-1">♋</span><span id="cancerSign" class="font-semibold text-purple-600">Cancer</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Leo">
+                        <span class="text-4xl mb-1">♌</span><span id="leoSign" class="font-semibold text-purple-600">Leo</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Virgo">
+                        <span class="text-4xl mb-1">♍</span><span id="virgoSign" class="font-semibold text-purple-600">Virgo</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Libra">
+                        <span class="text-4xl mb-1">♎</span><span id="libraSign" class="font-semibold text-purple-600">Libra</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Scorpio">
+                        <span class="text-4xl mb-1">♏</span><span id="scorpioSign" class="font-semibold text-purple-600">Scorpio</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Sagittarius">
+                        <span class="text-4xl mb-1">♐</span><span id="sagittariusSign" class="font-semibold text-purple-600">Sagittarius</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Capricorn">
+                        <span class="text-4xl mb-1">♑</span><span id="capricornSign" class="font-semibold text-purple-600">Capricorn</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Aquarius">
+                        <span class="text-4xl mb-1">♒</span><span id="aquariusSign" class="font-semibold text-purple-600">Aquarius</span>
+                    </div>
+                    <div class="zodiac-sign card p-4 flex flex-col items-center justify-center aspect-square" data-sign="Pisces">
+                        <span class="text-4xl mb-1">♓</span><span id="piscesSign" class="font-semibold text-purple-600">Pisces</span>
+                    </div>
+                </div>
+                <div id="sign-message-display" class="card p-6 min-h-[100px] max-w-xl mx-auto text-lg text-purple-700 flex items-center justify-center">
+                    Select your sign above!
+                </div>
+            </div>
+        </section>
+        <section id="contact" class="py-16 px-4 bg-purple-50/50">
+            <div class="container mx-auto max-w-lg text-center">
+                <h3 id="contactTitle" class="text-3xl font-display text-purple-700 mb-8">Connect with Sara</h3>
+                <p id="contactSubtitle" class="text-lg text-slate-700 mb-8">
+                    Ready to explore your cosmic path or have questions? Reach out to schedule your personalized reading.
+                </p>
+                <form id="contact-form" class="space-y-6">
+                    <div>
+                        <label for="name" id="fullNameLabel" class="block text-sm font-medium text-purple-600 text-left mb-1">Full Name</label>
+                        <input type="text" name="name" id="name" class="w-full p-3 border border-purple-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500" placeholder="Your Name">
+                    </div>
+                    <div>
+                        <label for="email" id="emailLabel" class="block text-sm font-medium text-purple-600 text-left mb-1">Email Address</label>
+                        <input type="email" name="email" id="email" class="w-full p-3 border border-purple-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500" placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label for="message" id="messageLabel" class="block text-sm font-medium text-purple-600 text-left mb-1">Message</label>
+                        <textarea name="message" id="message" rows="4" class="w-full p-3 border border-purple-300 rounded-lg shadow-sm focus:ring-pink-500 focus:border-pink-500" placeholder="Your message or inquiry..."></textarea>
+                    </div>
+                    <div>
+                        <button type="submit" id="sendMessageButton" class="btn-primary w-full">Send Message</button>
+                    </div>
+                </form>
+                <div id="form-submission-message" class="mt-4 text-pink-600"></div>
+            </div>
+        </section>
+    </main>
+    <footer class="py-8 px-4 text-center bg-gradient-to-r from-purple-400 to-pink-400 text-white mt-auto">
+        <div class="container mx-auto">
+            <p class="mb-2">© <span id="currentYear"></span> <span id="footerRights">Sara's Astrology Zone. All Rights Reserved.</span></p>
+            <p class="text-sm" id="footerDesign">Designed with <span class="text-pink-200">♥</span> for cosmic exploration.</p>
+        </div>
+    </footer>
+    <script>
+        const translations = {
+            en: {
+                'pageTitle': "Sara's Astrology Zone - Unlock Your Cosmic Path",
+                'siteTitle': "Sara's Astrology Zone",
+                'navHome': "Home",
+                'navAbout': "About Sara",
+                'navServices': "Services",
+                'navYourSign': "Your Sign",
+                'navContact': "Contact",
+                'homeTitle': "Your Cosmic Path Awaits",
+                'homeSubtitle': "Unlock the wisdom of the stars with Sara",
+                'getInsightButton': "Get Daily Insight",
+                'insightPlaceholder': "Click the button above to get your cosmic insight!",
+                'dailyInsight1': "Today will bring unexpected opportunities for growth. Be open to new experiences.",
+                'dailyInsight2': "The stars advise focusing on inner harmony. Take time for meditation or quiet rest.",
+                'dailyInsight3': "Your intuition is especially strong today. Trust your feelings when making important decisions.",
+                'dailyInsight4': "Today is a favorable day for communication. Connect with friends and loved ones to strengthen bonds.",
+                'dailyInsight5': "Use your creative energy. Do what inspires you and let your imagination run wild.",
+                'dailyInsight6': "Pay attention to details. Small steps today can lead to big results tomorrow.",
+                'dailyInsight7': "Today is a good day for new beginnings. Don't be afraid to take risks and step out of your comfort zone.",
+                'dailyInsight8': "Find a balance between work and rest. Your well-being depends on harmony in all areas of life.",
+                'dailyInsight9': "Let go of the past and focus on the present. Every moment is a new opportunity for happiness.",
+                'dailyInsight10': "Your perseverance will be rewarded. Keep moving towards your goals, even if the path seems difficult.",
+                'dailyInsight11': "Today is a great day for learning and self-development. Deepen your knowledge and broaden your horizons.",
+                'dailyInsight12': "Be grateful for what you have. Gratitude attracts even more positive energy into your life.",
+                'aboutTitle': "Meet Sara",
+                'aboutParagraph1': "Hello, I'm Sara! With a lifelong passion for the celestial arts, I've dedicated myself to helping others navigate their life's path through the wisdom of astrology. My approach is intuitive, compassionate, and tailored to your unique cosmic blueprint.",
+                'aboutParagraph2': "Whether you're seeking clarity on your purpose, relationships, or future endeavors, I'm here to illuminate the guidance and insights the stars hold for you. Let's explore your journey together!",
+                'servicesTitle': "My Services",
+                'serviceNatalTitle': "Natal Chart Reading",
+                'serviceNatalDesc': "Discover your unique strengths, challenges, and life purpose encoded in your birth chart.",
+                'serviceRelTitle': "Relationship Compatibility",
+                'serviceRelDesc': "Understand the dynamics between you and your partner with a synastry chart analysis.",
+                'serviceYearlyTitle': "Yearly Forecast",
+                'serviceYearlyDesc': "Gain insights into the upcoming year's energies, opportunities, and potential challenges.",
+                'yourSignTitle': "What's Your Sign?",
+                'yourSignSubtitle': "Click your zodiac sign to reveal a little cosmic insight!",
+                'signPlaceholder': "Select your sign above!",
+                'aries': "Aries", 'taurus': "Taurus", 'gemini': "Gemini", 'cancer': "Cancer", 'leo': "Leo", 'virgo': "Virgo",
+                'libra': "Libra", 'scorpio': "Scorpio", 'sagittarius': "Sagittarius", 'capricorn': "Capricorn", 'aquarius': "Aquarius", 'pisces': "Pisces",
+                "insightAries": "♈ Aries: You are pioneering and courageous! Today, embrace new beginnings with your signature boldness.",
+                "insightTaurus": "♉ Taurus: You value beauty and stability. Find comfort in your senses and enjoy life's simple pleasures.",
+                "insightGemini": "♊ Gemini: Your mind is quick and curious! Engage in stimulating conversations and explore new ideas.",
+                "insightCancer": "♋ Cancer: Nurturing and intuitive, you feel deeply. Trust your instincts and connect with loved ones.",
+                "insightLeo": "♌ Leo: Charismatic and generous, you shine brightly! Express your creativity and let your inner light guide you.",
+                "insightVirgo": "♍ Virgo: Practical and analytical, you seek improvement. Focus on details and find joy in organization.",
+                "insightLibra": "♎ Libra: You strive for harmony and balance. Seek beauty in your surroundings and foster peaceful connections.",
+                "insightScorpio": "♏ Scorpio: Passionate and perceptive, you delve deep. Embrace transformation and your inner strength.",
+                "insightSagittarius": "♐ Sagittarius: Adventurous and optimistic, you love to explore! Seek knowledge and expand your horizons.",
+                "insightCapricorn": "♑ Capricorn: Disciplined and ambitious, you build lasting structures. Your hard work will pay off.",
+                "insightAquarius": "♒ Aquarius: Innovative and independent, you are a true original. Embrace your unique vision for the future.",
+                "insightPisces": "♓ Pisces: Compassionate and artistic, you are deeply empathetic. Allow your intuition to lead the way.",
+                "noSignMessage": "Oops! No message for this sign yet.",
+                'contactTitle': "Connect with Sara",
+                'contactSubtitle': "Ready to explore your cosmic path or have questions? Reach out to schedule your personalized reading.",
+                'fullNameLabel': "Full Name",
+                'fullNamePlaceholder': "Your Name",
+                'emailLabel': "Email Address",
+                'emailPlaceholder': "you@example.com",
+                'messageLabel': "Message",
+                'messagePlaceholder': "Your message or inquiry...",
+                'sendMessageButton': "Send Message",
+                'formSuccess': "Your email is ready to be sent. Please check your email client.",
+                'formError': "Please fill in all fields.",
+                'footerRights': "Sara's Astrology Zone. All Rights Reserved.",
+                'footerDesign': "Designed with <span class=\"text-pink-200\">♥</span> for cosmic exploration."
+            },
+            de: {
+                'pageTitle': "Saras Astrologie-Zone - Entdecken Sie Ihren Kosmischen Pfad",
+                'siteTitle': "Saras Astrologie-Zone",
+                'navHome': "Startseite",
+                'navAbout': "Über Sara",
+                'navServices': "Dienstleistungen",
+                'navYourSign': "Ihr Zeichen",
+                'navContact': "Kontakt",
+                'homeTitle': "Ihr Kosmischer Pfad Erwartet Sie",
+                'homeSubtitle': "Entdecken Sie die Weisheit der Sterne mit Sara",
+                'getInsightButton': "Tägliche Einsicht erhalten",
+                'insightPlaceholder': "Klicken Sie auf die Schaltfläche oben, um Ihre kosmische Einsicht zu erhalten!",
+                'dailyInsight1': "Der heutige Tag wird unerwartete Wachstumschancen bringen. Seien Sie offen für neue Erfahrungen.",
+                'dailyInsight2': "Die Sterne raten, sich auf die innere Harmonie zu konzentrieren. Nehmen Sie sich Zeit für Meditation oder ruhige Erholung.",
+                'dailyInsight3': "Ihre Intuition ist heute besonders stark. Vertrauen Sie Ihren Gefühlen bei wichtigen Entscheidungen.",
+                'dailyInsight4': "Heute ist ein günstiger Tag für die Kommunikation. Verbinden Sie sich mit Freunden und Lieben, um Bindungen zu stärken.",
+                'dailyInsight5': "Nutzen Sie Ihre kreative Energie. Tun Sie, was Sie inspiriert, und lassen Sie Ihrer Fantasie freien Lauf.",
+                'dailyInsight6': "Achten Sie auf Details. Kleine Schritte heute können morgen zu großen Ergebnissen führen.",
+                'dailyInsight7': "Heute ist ein guter Tag für Neuanfänge. Haben Sie keine Angst, Risiken einzugehen und Ihre Komfortzone zu verlassen.",
+                'dailyInsight8': "Finden Sie ein Gleichgewicht zwischen Arbeit und Ruhe. Ihr Wohlbefinden hängt von der Harmonie in allen Lebensbereichen ab.",
+                'dailyInsight9': "Lassen Sie die Vergangenheit los und konzentrieren Sie sich auf die Gegenwart. Jeder Moment ist eine neue Chance für Glück.",
+                'dailyInsight10': "Ihre Ausdauer wird belohnt. Bewegen Sie sich weiter auf Ihre Ziele zu, auch wenn der Weg schwierig erscheint.",
+                'dailyInsight11': "Heute ist ein großartiger Tag zum Lernen und zur Selbstentwicklung. Vertiefen Sie Ihr Wissen und erweitern Sie Ihren Horizont.",
+                'dailyInsight12': "Seien Sie dankbar für das, was Sie haben. Dankbarkeit zieht noch mehr positive Energie in Ihr Leben.",
+                'aboutTitle': "Lernen Sie Sara kennen",
+                'aboutParagraph1': "Hallo, ich bin Sara! Mit einer lebenslangen Leidenschaft für die himmlischen Künste habe ich mich der Aufgabe verschrieben, anderen zu helfen, ihren Lebensweg durch die Weisheit der Astrologie zu finden. Mein Ansatz ist intuitiv, mitfühlend und auf Ihren einzigartigen kosmischen Bauplan zugeschnitten.",
+                'aboutParagraph2': "Egal, ob Sie Klarheit über Ihren Zweck, Beziehungen oder zukünftige Vorhaben suchen, ich bin hier, um die Führung und Einsichten zu beleuchten, die die Sterne für Sie bereithalten. Lassen Sie uns Ihre Reise gemeinsam erkunden!",
+                'servicesTitle': "Meine Dienstleistungen",
+                'serviceNatalTitle': "Geburtshoroskop-Lesung",
+                'serviceNatalDesc': "Entdecken Sie Ihre einzigartigen Stärken, Herausforderungen und den Lebenszweck, die in Ihrem Geburtshoroskop kodiert sind.",
+                'serviceRelTitle': "Beziehungskompatibilität",
+                'serviceRelDesc': "Verstehen Sie die Dynamik zwischen Ihnen und Ihrem Partner mit einer Synastrie-Chart-Analyse.",
+                'serviceYearlyTitle': "Jahresprognose",
+                'serviceYearlyDesc': "Erhalten Sie Einblicke in die Energien, Chancen und potenziellen Herausforderungen des kommenden Jahres.",
+                'yourSignTitle': "Was ist Ihr Zeichen?",
+                'yourSignSubtitle': "Klicken Sie auf Ihr Sternzeichen, um eine kleine kosmische Einsicht zu erhalten!",
+                'signPlaceholder': "Wählen Sie Ihr Zeichen oben aus!",
+                'aries': "Widder", 'taurus': "Stier", 'gemini': "Zwillinge", 'cancer': "Krebs", 'leo': "Löwe", 'virgo': "Jungfrau",
+                'libra': "Waage", 'scorpio': "Skorpion", 'sagittarius': "Schütze", 'capricorn': "Steinbock", 'aquarius': "Wassermann", 'pisces': "Fische",
+                "insightAries": "♈ Widder: Sie sind wegweisend und mutig! Nehmen Sie heute neue Anfänge mit Ihrer charakteristischen Kühnheit an.",
+                "insightTaurus": "♉ Stier: Sie schätzen Schönheit und Stabilität. Finden Sie Trost in Ihren Sinnen und genießen Sie die einfachen Freuden des Lebens.",
+                "insightGemini": "♊ Zwillinge: Ihr Geist ist schnell und neugierig! Beteiligen Sie sich an anregenden Gespressen und erkunden Sie neue Ideen.",
+                "insightCancer": "♋ Krebs: Pflegend und intuitiv, Sie fühlen tief. Vertrauen Sie Ihren Instinkten und verbinden Sie sich mit Ihren Lieben.",
+                "insightLeo": "♌ Löwe: Charismatisch und großzügig, Sie strahlen hell! Drücken Sie Ihre Kreativität aus und lassen Sie Ihr inneres Licht Sie leiten.",
+                "insightVirgo": "♍ Jungfrau: Praktisch und analytisch, Sie streben nach Verbesserung. Konzentrieren Sie sich auf Details und finden Sie Freude an der Organisation.",
+                "insightLibra": "♎ Waage: Sie streben nach Harmonie und Gleichgewicht. Suchen Sie Schönheit in Ihrer Umgebung und fördern Sie friedliche Verbindungen.",
+                "insightScorpio": "♏ Skorpion: Leidenschaftlich und wahrnehmend, Sie tauchen tief ein. Umarmen Sie Transformation und Ihre innere Stärke.",
+                "insightSagittarius": "♐ Schütze: Abenteuerlustig und optimistisch, Sie lieben es zu erkunden! Suchen Sie Wissen und erweitern Sie Ihren Horizont.",
+                "insightCapricorn": "♑ Steinbock: Diszipliniert und ehrgeizig, Sie bauen dauerhafte Strukturen. Ihre harte Arbeit wird sich auszahlen.",
+                "insightAquarius": "♒ Wassermann: Innovativ und unabhängig, Sie sind ein echtes Original. Umarmen Sie Ihre einzigartige Vision for the future.",
+                "insightPisces": "♓ Fische: Mitfühlend und künstlerisch, Sie sind tief empathisch. Lassen Sie sich von Ihrer Intuition leiten.",
+                "noSignMessage": "Hoppla! Keine Nachricht für dieses Zeichen bisher.",
+                'contactTitle': "Verbinden Sie sich mit Sara",
+                'contactSubtitle': "Bereit, Ihren kosmischen Pfad zu erkunden oder haben Sie Fragen? Nehmen Sie Kontakt auf, um Ihre persönliche Lesung zu vereinbaren.",
+                'fullNameLabel': "Vollständiger Name",
+                'fullNamePlaceholder': "Ihr Name",
+                'emailLabel': "E-Mail-Adresse",
+                'emailPlaceholder': "Sie@example.com",
+                'messageLabel': "Nachricht",
+                'messagePlaceholder': "Ihre Nachricht oder Anfrage...",
+                'sendMessageButton': "Nachricht senden",
+                'formSuccess': "Ihre E-Mail ist versandbereit. Bitte überprüfen Sie Ihr E-Mail-Programm.",
+                'formError': "Bitte füllen Sie alle Felder aus.",
+                'footerRights': "Saras Astrologie-Zone. Alle Rechte vorbehalten.",
+                'footerDesign': "Entworfen mit <span class=\"text-pink-200\">♥</span> für kosmische Erkundung."
+            },
+            tr: {
+                'pageTitle': "Sara's Astroloji Bölgesi - Kozmik Yolunuzu Keşfedin",
+                'siteTitle': "Sara's Astroloji Bölgesi",
+                'navHome': "Ana Sayfa",
+                'navAbout': "Sara Hakkında",
+                'navServices': "Hizmetler",
+                'navYourSign': "Burcunuz",
+                'navContact': "İletişim",
+                'homeTitle': "Kozmik Yolunuz Sizi Bekliyor",
+                'homeSubtitle': "Sara ile yıldızların bilgeliğini keşfedin",
+                'getInsightButton': "Günlük İçgörü Al",
+                'insightPlaceholder': "Kozmik içgörünüzü almak için yukarıdaki düğmeye tıklayın!",
+                'dailyInsight1': "Bugün beklenmedik büyüme fırsatları getirecek. Yeni deneyimlere açık olun.",
+                'dailyInsight2': "Yıldızlar iç huzura odaklanmanızı tavsiye ediyor. Meditasyon veya sakin bir dinlenme için zaman ayırın.",
+                'dailyInsight3': "Sezgileriniz bugün özellikle güçlü. Önemli kararlar alırken duygularınıza güvenin.",
+                'dailyInsight4': "Bugün iletişim için uygun bir gün. Bağları güçlendirmek için arkadaşlarınızla ve sevdiklerinizle bağlantı kurun.",
+                'dailyInsight5': "Yaratıcı enerjinizi kullanın. Size ilham veren şeyleri yapın ve hayal gücünüzü serbest bırakın.",
+                'dailyInsight6': "Detaylara dikkat edin. Bugün atılan küçük adımlar yarın büyük sonuçlara yol açabilir.",
+                'dailyInsight7': "Bugün yeni başlangıçlar için iyi bir gün. Risk almaktan ve konfor alanınızdan çıkmaktan korkmayın.",
+                'dailyInsight8': "İş ve dinlenme arasında denge bulun. Refahınız hayatın tüm alanlarındaki uyuma bağlıdır.",
+                'dailyInsight9': "Geçmişi bırakın ve bugüne odaklanın. Her an mutluluk için yeni bir fırsattır.",
+                'dailyInsight10': "Azminiz ödüllendirilecek. Yol zor görünse bile hedeflerinize doğru ilerlemeye devam edin.",
+                'dailyInsight11': "Bugün öğrenme ve kendini geliştirme için harika bir gün. Bilginizi derinleştirin ve ufkunuzu genişletin.",
+                'dailyInsight12': "Sahip olduklarınıza şükredin. Şükran, hayatınıza daha fazla pozitif enerji çeker.",
+                'aboutTitle': "Sara ile Tanışın",
+                'aboutParagraph1': "Merhaba, ben Sara! Göksel sanatlara duyduğum ömür boyu süren tutkuyla, astrolojinin bilgeliği aracılığıyla başkalarının yaşam yollarında gezinmelerine yardımcı olmaya adadım kendimi. Yaklaşımım sezgisel, şefkatli ve benzersiz kozmik planınıza göre uyarlanmıştır.",
+                'aboutParagraph2': "Amacınız, ilişkileriniz veya gelecekteki çabalarınız hakkında netlik arıyorsanız, yıldızların sizin için tuttuğu rehberliği ve içgörüleri aydınlatmak için buradayım. Gelin yolculuğunuzu birlikte keşfedelim!",
+                'servicesTitle': "Hizmetlerim",
+                'serviceNatalTitle': "Doğum Haritası Okuması",
+                'serviceNatalDesc': "Doğum haritanızda kodlanmış benzersiz güçlü yönlerinizi, zorluklarınızı ve yaşam amacınızı keşfedin.",
+                'serviceRelTitle': "İlişki Uyumu",
+                'serviceRelDesc': "Sinastri haritası analizi ile sizin ve partneriniz arasındaki dinamikleri anlayın.",
+                'serviceYearlyTitle': "Yıllık Tahmin",
+                'serviceYearlyDesc': "Gelecek yılın enerjileri, fırsatları ve potansiyel zorlukları hakkında içgörüler edinin.",
+                'yourSignTitle': "Burcunuz Ne?",
+                'yourSignSubtitle': "Küçük bir kozmik içgörü ortaya çıkarmak için burcunuza tıklayın!",
+                'signPlaceholder': "Yukarıdan burcunuzu seçin!",
+                'aries': "Koç", 'taurus': "Boğa", 'gemini': "İkizler", 'cancer': "Yengeç", 'leo': "Aslan", 'virgo': "Başak",
+                'libra': "Terazi", 'scorpio': "Akrep", 'sagittarius': "Yay", 'capricorn': "Oğlak", 'aquarius': "Kova", 'pisces': "Balık",
+                "insightAries": "♈ Koç: Öncü ve cesursunuz! Bugün, yeni başlangıçları imzanız olan cesaretinizle kucaklayın.",
+                "insightTaurus": "♉ Boğa: Güzelliğe ve istikrara değer verirsiniz. Duyularınızda rahatlık bulun ve hayatın basit zevklerinin tadını çıkarın.",
+                "insightGemini": "♊ İkizler: Zihniniz hızlı ve meraklı! Canlandırıcı sohbetlere katılın ve yeni fikirler keşfedin.",
+                "insightCancer": "♋ Yengeç: Besleyici ve sezgisel, derin hissedersiniz. İçgüdülerinize güvenin ve sevdiklerinizle bağlantı kurun.",
+                "insightLeo": "♌ Aslan: Karizmatik ve cömert, parlak bir şekilde parlıyorsunuz! Yaratıcılığınızı ifade edin ve iç ışığınızın size rehberlik etmesine izin verin.",
+                "insightVirgo": "♍ Başak: Pratik ve analitik, gelişmeyi ararsınız. Detaylara odaklanın ve organizasyonda neşe bulun.",
+                "insightLibra": "♎ Terazi: Uyum ve denge için çabalarsınız. Çevrenizde güzelliği arayın ve huzurlu bağlantıları teşvik edin.",
+                "insightScorpio": "♏ Akrep: Tutkulu ve algılayıcı, derine inersiniz. Dönüşümü ve içsel gücünüzü kucaklayın.",
+                "insightSagittarius": "♐ Yay: Maceraperest ve iyimser, keşfetmeyi seversiniz! Bilgi arayın ve ufkunuzu genişletin.",
+                "insightCapricorn": "♑ Oğlak: Disiplinli ve hırslı, kalıcı yapılar inşa edersiniz. Sıkı çalışmanız karşılığını verecektir.",
+                "insightAquarius": "♒ Kova: Yenilikçi ve bağımsız, gerçek bir orijinalsiniz. Geleceğe dair benzersiz vizyonunuzu kucaklayın.",
+                "insightPisces": "♓ Balık: Şefkatli ve sanatsal, derinden empatiksiniz. Sezgilerinizin size yol göstermesine izin verin.",
+                "noSignMessage": "Hata! Bu burç için henüz mesaj yok.",
+                'contactTitle': "Sara ile Bağlantı Kurun",
+                'contactSubtitle': "Kozmik yolunuzu keşfetmeye veya sorularınız mı var? Kişiselleştirilmiş okumanızı planlamak için iletişime geçin.",
+                'fullNameLabel': "Tam Adınız",
+                'fullNamePlaceholder': "Adınız",
+                'emailLabel': "E-posta Adresi",
+                'emailPlaceholder': "siz@example.com",
+                'messageLabel': "Mesaj",
+                'messagePlaceholder': "Mesajınız або запит...",
+                'sendMessageButton': "Надіслати повідомлення",
+                'formSuccess': "Ваш лист готовий до відправлення. Будь ласка, перевірте свій поштовий клієнт.",
+                'formError': "Будь ласка, заповніть усі поля.",
+                'footerRights': "Sara's Astroloji Bölgesi. Tüm Hakları Saklıdır.",
+                'footerDesign': "Kozmik keşif için <span class=\"text-pink-200\">♥</span> ile tasarlandı."
+            }
+        };
+
+        let currentLang = 'en';
+
+        let zodiacMessages = {};
+        let dailyInsights = [];
+
+        function applyTranslations(lang) {
+            const t = translations[lang];
+
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+
+            document.getElementById('siteTitle').textContent = t.siteTitle;
+            document.getElementById('navHome').textContent = t.navHome;
+            document.getElementById('navAbout').textContent = t.navAbout;
+            document.getElementById('navServices').textContent = t.navServices;
+            document.getElementById('navYourSign').textContent = t.navYourSign;
+            document.getElementById('navContact').textContent = t.navContact;
+
+            document.querySelector('#mobile-menu a[href="#home"]').textContent = t.navHome;
+            document.querySelector('#mobile-menu a[href="#about"]').textContent = t.navAbout;
+            document.querySelector('#mobile-menu a[href="#services"]').textContent = t.navServices;
+            document.querySelector('#mobile-menu a[href="#your-sign"]').textContent = t.navYourSign;
+            document.querySelector('#mobile-menu a[href="#contact"]').textContent = t.navContact;
+
+            document.getElementById('homeTitle').textContent = t.homeTitle;
+            document.getElementById('homeSubtitle').textContent = t.homeSubtitle;
+            document.getElementById('getInsightButton').textContent = t.getInsightButton;
+            if (!dailyInsightDisplay.classList.contains('show')) {
+                dailyInsightDisplay.textContent = t.insightPlaceholder;
+            }
+
+            document.getElementById('aboutTitle').textContent = t.aboutTitle;
+            document.getElementById('aboutParagraph1').textContent = t.aboutParagraph1;
+            document.getElementById('aboutParagraph2').textContent = t.aboutParagraph2;
+
+            document.getElementById('servicesTitle').textContent = t.servicesTitle;
+            document.getElementById('serviceNatalTitle').textContent = t.serviceNatalTitle;
+            document.getElementById('serviceNatalDesc').textContent = t.serviceNatalDesc;
+            document.getElementById('serviceRelTitle').textContent = t.serviceRelTitle;
+            document.getElementById('serviceRelDesc').textContent = t.serviceRelDesc;
+            document.getElementById('serviceYearlyTitle').textContent = t.serviceYearlyTitle;
+            document.getElementById('serviceYearlyDesc').textContent = t.serviceYearlyDesc;
+
+            document.getElementById('yourSignTitle').textContent = t.yourSignTitle;
+            document.getElementById('yourSignSubtitle').textContent = t.yourSignSubtitle;
+            if (!document.querySelector('.zodiac-sign.selected')) {
+                document.getElementById('sign-message-display').textContent = t.signPlaceholder;
+            }
+
+            document.getElementById('ariesSign').textContent = t.aries;
+            document.getElementById('taurusSign').textContent = t.taurus;
+            document.getElementById('geminiSign').textContent = t.gemini;
+            document.getElementById('cancerSign').textContent = t.cancer;
+            document.getElementById('leoSign').textContent = t.leo;
+            document.getElementById('virgoSign').textContent = t.virgo;
+            document.getElementById('libraSign').textContent = t.libra;
+            document.getElementById('scorpioSign').textContent = t.scorpio;
+            document.getElementById('sagittariusSign').textContent = t.sagittarius;
+            document.getElementById('capricornSign').textContent = t.capricorn;
+            document.getElementById('aquariusSign').textContent = t.aquarius;
+            document.getElementById('piscesSign').textContent = t.pisces;
+
+            document.getElementById('contactTitle').textContent = t.contactTitle;
+            document.getElementById('contactSubtitle').textContent = t.contactSubtitle;
+            document.getElementById('fullNameLabel').textContent = t.fullNameLabel;
+            document.getElementById('name').placeholder = t.fullNamePlaceholder;
+            document.getElementById('emailLabel').textContent = t.emailLabel;
+            document.getElementById('email').placeholder = t.emailPlaceholder;
+            document.getElementById('messageLabel').textContent = t.messageLabel;
+            document.getElementById('message').placeholder = t.messagePlaceholder;
+            document.getElementById('sendMessageButton').textContent = t.sendMessageButton;
+
+            document.getElementById('footerRights').textContent = t.footerRights;
+            document.getElementById('footerDesign').innerHTML = t.footerDesign;
+
+            zodiacMessages = {
+                "Aries": t.insightAries,
+                "Taurus": t.insightTaurus,
+                "Gemini": t.insightGemini,
+                "Cancer": t.insightCancer,
+                "Leo": t.insightLeo,
+                "Virgo": t.insightVirgo,
+                "Libra": t.insightLibra,
+                "Scorpio": t.insightScorpio,
+                "Sagittarius": t.insightSagittarius,
+                "Capricorn": t.insightCapricorn,
+                "Aquarius": t.insightAquarius,
+                "Pisces": t.insightPisces
+            };
+            dailyInsights = [
+                t.dailyInsight1, t.dailyInsight2, t.dailyInsight3, t.dailyInsight4,
+                t.dailyInsight5, t.dailyInsight6, t.dailyInsight7, t.dailyInsight8,
+                t.dailyInsight9, t.dailyInsight10, t.dailyInsight11, t.dailyInsight12
+            ];
+
+            const formSubmissionMessageElement = document.getElementById('form-submission-message');
+            if (formSubmissionMessageElement.dataset.status === 'success') {
+                formSubmissionMessageElement.textContent = t.formSuccess;
+            } else if (formSubmissionMessageElement.dataset.status === 'error') {
+                formSubmissionMessageElement.textContent = t.formError;
+            } else {
+                formSubmissionMessageElement.textContent = '';
+            }
+           
+            const selectedSignElement = document.querySelector('.zodiac-sign.selected');
+            if (selectedSignElement) {
+                const selectedSign = selectedSignElement.dataset.sign;
+                document.getElementById('sign-message-display').textContent = zodiacMessages[selectedSign] || t.noSignMessage;
+            }
+        }
+
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+        const zodiacSigns = document.querySelectorAll('.zodiac-sign');
+        const signMessageDisplay = document.getElementById('sign-message-display');
+        zodiacSigns.forEach(sign => {
+            sign.addEventListener('click', () => {
+                zodiacSigns.forEach(s => s.classList.remove('selected'));
+                sign.classList.add('selected');
+                const selectedSign = sign.dataset.sign;
+                signMessageDisplay.textContent = zodiacMessages[selectedSign] || translations[currentLang].noSignMessage;
+            });
+        });
+
+        const getDailyInsightButton = document.getElementById('getDailyInsight');
+        const dailyInsightDisplay = document.getElementById('daily-insight-display');
+        getDailyInsightButton.addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * dailyInsights.length);
+            dailyInsightDisplay.textContent = dailyInsights[randomIndex];
+            dailyInsightDisplay.classList.add('show');
+        });
+
+        const contactForm = document.getElementById('contact-form');
+        const formSubmissionMessage = document.getElementById('form-submission-message');
+        contactForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            if (name && email && message) {
+                const recipient = 'ycl.saraa@gmail.com';
+                const subject = encodeURIComponent(`${translations[currentLang].contactTitle} from ${name}`);
+                const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+                const mailtoLink = `mailto:${recipient}?subject=${subject}&body=${body}`;
+
+                window.location.href = mailtoLink;
+
+                formSubmissionMessage.dataset.status = 'success';
+                formSubmissionMessage.textContent = translations[currentLang].formSuccess;
+                formSubmissionMessage.classList.remove('text-red-500');
+                formSubmissionMessage.classList.add('text-green-600');
+                contactForm.reset();
+            } else {
+                formSubmissionMessage.dataset.status = 'error';
+                formSubmissionMessage.textContent = translations[currentLang].formError;
+                formSubmissionMessage.classList.remove('text-green-600');
+                formSubmissionMessage.classList.add('text-red-500');
+            }
+        });
+
+        document.getElementById('lang-en').addEventListener('click', () => {
+            currentLang = 'en';
+            applyTranslations('en');
+        });
+
+        document.getElementById('lang-de').addEventListener('click', () => {
+            currentLang = 'de';
+            applyTranslations('de');
+        });
+
+        document.getElementById('lang-tr').addEventListener('click', () => {
+            currentLang = 'tr';
+            applyTranslations('tr');
+        });
+
+        document.getElementById('lang-en-mobile').addEventListener('click', () => {
+            currentLang = 'en';
+            applyTranslations('en');
+        });
+
+        document.getElementById('lang-de-mobile').addEventListener('click', () => {
+            currentLang = 'de';
+            applyTranslations('de');
+        });
+
+        document.getElementById('lang-tr-mobile').addEventListener('click', () => {
+            currentLang = 'tr';
+            applyTranslations('tr');
+        });
+
+        applyTranslations(currentLang);
+    </script>
+</body>
+</html>
